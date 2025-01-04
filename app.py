@@ -79,7 +79,7 @@ async def main():
 		console.log("\n[italic]Clearing favorites...[/italic]")
 
 		async for message in client.iter_messages("me"):
-			message.delete()
+			await message.delete()
 
 			console.log(f"Delete message with ID [bold]{message.id}[/bold]")
 
