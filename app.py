@@ -2,7 +2,7 @@ import asyncio
 
 from rich.console import Console
 
-from telethon import TelegramClient
+from telethon import functions, TelegramClient
 
 import config
 
@@ -55,6 +55,10 @@ async def main():
 
 		async for dialog in client.iter_dialogs():
 			if dialog.is_user and dialog.entity.bot:
+				await client(functions.contacts.BlockRequest(
+					id=dialog.id
+				))
+
 				await client.delete_dialog(dialog)
 
 				console.log(f"Deleted bot [bold]{dialog.name}[/bold]")
