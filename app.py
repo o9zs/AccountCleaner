@@ -15,7 +15,8 @@ options = {
 	2: "leave channels",
 	3: "delete bots",
 	4: "delete conversations",
-	5: "clear favorites"
+	5: "clear favorites",
+	6: "don't logout"
 }
 
 console.log("\n".join([f"[bold]{number}[/bold] - {text}" for number, text in options.items()]))
@@ -37,7 +38,7 @@ async def main():
 		console.log("\n")
 
 	if "2" in selected_options:
-		console.log("\n[italic]Leaving channel...[/italic]")
+		console.log("\n[italic]Leaving channels...[/italic]")
 
 		async for dialog in client.iter_dialogs():
 			if dialog.is_channel:
@@ -66,7 +67,6 @@ async def main():
 		console.log("\n[italic]Deleting conversations...[/italic]")
 
 		async for dialog in client.iter_dialogs():
-			if dialog.is_user and not dialog.entity.bot:
 				await client.delete_dialog(dialog)
 
 				console.log(f"Deleted conversation with [bold]{dialog.name}[/bold]")
@@ -86,6 +86,9 @@ async def main():
 			await asyncio.sleep(config.interval)
 
 		console.log("\n")
+
+	if "6" not in selected_options:
+		await client.log_out()
 
 with client:
 	client.loop.run_until_complete(main())
