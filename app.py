@@ -14,14 +14,11 @@ options = {
 	1: "leave groups",	
 	2: "leave channels",
 	3: "delete bots",
-	4: "delete conversations",
-	5: "clear favorites",
-	6: "don't logout"
+	4: "delete private chats",
+	5: "block private chats",
+	6: "clear favorites",
+	7: "don't logout"
 }
-
-console.log("\n".join([f"[bold]{number}[/bold] - {text}" for number, text in options.items()]))
-
-selected_options = console.input("\nSelect all desired options: ")
 
 async def main():
 	if "1" in selected_options:
@@ -68,18 +65,34 @@ async def main():
 		console.log("\n")
 
 	if "4" in selected_options:
-		console.log("\n[italic]Deleting conversations...[/italic]")
+		console.log("\n[italic]Deleting private chats...[/italic]")
 
 		async for dialog in client.iter_dialogs():
+			if dialog.is_user and not dialog.entity.bot:
 				await client.delete_dialog(dialog)
 
-				console.log(f"Deleted conversation with [bold]{dialog.name}[/bold]")
+				console.log(f"Deleted private chat with [bold]{dialog.name}[/bold]")
 
 				await asyncio.sleep(config.interval)
 
 		console.log("\n")
 
 	if "5" in selected_options:
+		console.log("\n[italic]Blocking private chats...[/italic]")
+
+		async for dialog in client.iter_dialogs():
+			if dialog.is_user and not dialog.entity.bot:
+				await client(functions.contacts.BlockRequest(
+					id=dialog.id
+				))
+
+				console.log(f"Blocked [bold]{dialog.name}[/bold]")
+
+				await asyncio.sleep(config.interval)
+
+		console.log("\n")
+
+	if "6" in selected_options:
 		console.log("\n[italic]Clearing favorites...[/italic]")
 
 		async for message in client.iter_messages("me"):
@@ -91,8 +104,12 @@ async def main():
 
 		console.log("\n")
 
-	if "6" not in selected_options:
+	if "7" not in selected_options:
 		await client.log_out()
 
 with client:
+	console.log("\n".join([f"[bold]{number}[/bold] - {text}" for number, text in options.items()]))
+
+	selected_options = console.input("\nSelect all desired options: ")
+	
 	client.loop.run_until_complete(main())
