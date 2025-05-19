@@ -14,8 +14,8 @@ options = {
 	1: "leave groups",	
 	2: "leave channels",
 	3: "delete bots",
-	4: "delete private chats",
-	5: "block private chats",
+	4: "block private chats",
+	5: "delete private chats",
 	6: "clear favorites",
 	7: "don't logout"
 }
@@ -65,19 +65,6 @@ async def main():
 		console.log("\n")
 
 	if "4" in selected_options:
-		console.log("\n[italic]Deleting private chats...[/italic]")
-
-		async for dialog in client.iter_dialogs():
-			if dialog.is_user and not dialog.entity.bot:
-				await client.delete_dialog(dialog)
-
-				console.log(f"Deleted private chat with [bold]{dialog.name}[/bold]")
-
-				await asyncio.sleep(config.interval)
-
-		console.log("\n")
-
-	if "5" in selected_options:
 		console.log("\n[italic]Blocking private chats...[/italic]")
 
 		async for dialog in client.iter_dialogs():
@@ -87,6 +74,19 @@ async def main():
 				))
 
 				console.log(f"Blocked [bold]{dialog.name}[/bold]")
+
+				await asyncio.sleep(config.interval)
+
+		console.log("\n")
+
+	if "5" in selected_options:
+		console.log("\n[italic]Deleting private chats...[/italic]")
+
+		async for dialog in client.iter_dialogs():
+			if dialog.is_user and not dialog.entity.bot:
+				await client.delete_dialog(dialog)
+
+				console.log(f"Deleted private chat with [bold]{dialog.name}[/bold]")
 
 				await asyncio.sleep(config.interval)
 
