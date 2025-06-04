@@ -3,6 +3,7 @@ import asyncio
 from rich.console import Console
 
 from telethon import functions, TelegramClient
+from telethon.errors import PeerIdInvalidError
 
 import config
 
@@ -68,10 +69,15 @@ async def main():
 		console.log("\n[italic]Blocking private chats...[/italic]")
 
 		async for dialog in client.iter_dialogs():
-			if dialog.is_user and not dialog.entity.bot:
-				await client(functions.contacts.BlockRequest(
-					id=dialog.id
-				))
+			me = await client.get_me()
+
+			if dialog.is_user and not dialog.entity.bot and dialog.id != me.id:
+				try:
+					await client(functions.contacts.BlockRequest(
+						id=dialog.id
+					))
+				except PeerIdInvalidError:
+					console.log(f"[red]Failed to block [bold]{dialog.name}[/bold][/red] [gray50](PeerIdInvalidError)[/gray50]")
 
 				console.log(f"Blocked [bold]{dialog.name}[/bold]")
 
